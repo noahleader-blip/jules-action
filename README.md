@@ -43,7 +43,7 @@ jobs:
       contents: read
     steps:
       - name: Invoke Jules
-        uses: BeksOmega/jules-action@v1
+        uses: google-labs-code/jules-action@v1
         with:
           prompt: ${{ github.event.inputs.prompt }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
