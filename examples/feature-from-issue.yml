@@ -1,0 +1,40 @@
+name: Auto-Implement Features
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  implement:
+    # Only run when the 'feature' label is added
+    if: github.event.label.name == 'feature'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+    
+    steps:
+      - name: Check if user is allowed
+        # SECURITY: Only allow trusted users to trigger Jules
+        if: ${{ !contains(fromJSON('["your-username", "trusted-collaborator"]'), github.event.issue.user.login) }}
+        run: |
+          echo "::error::User not authorized to trigger Jules"
+          exit 1
+      
+      - name: Invoke Jules
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          prompt: |
+            Please implement the following feature:
+
+            ## ${{ github.event.issue.title }}
+
+            ${{ github.event.issue.body }}
+
+            Requirements:
+            1. Follow existing code style and patterns
+            2. Add appropriate error handling
+            3. Include tests for new functionality
+            4. Update documentation as needed
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          starting_branch: 'main'
