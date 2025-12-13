@@ -2,7 +2,7 @@
 
 <img src="assets/jules-logo.png" alt="Jules" width="400">
 
-## Jules Invoke
+## Jules Actions
 Invoke a powerful remote coding agent using GitHub Actions
 
 [Get Started](#-quick-start) • [Examples](./examples) • [API Docs](https://jules.google/docs/api/reference/)
@@ -156,19 +156,23 @@ jobs:
 
 ## 🔐 Security
 
-**⚠️ Important:** Issue-triggered workflows can be exploited by untrusted users opening issues. Always restrict who can trigger Jules for sources like GitHub issues.
+**⚠️ Important:** Issue-triggered workflows can be exploited by untrusted users opening issues. Always restrict who can trigger Jules for sources like GitHub issues. For things like issues, oftentimes __anyone__ can create an issue so it can be handy to have an allowlist condition for
+Jules triggering.
 
-**Use allowlists:**
+**Add an allowlist condition to your step:**
 
 ```yaml
-- name: Check authorization
-  if: ${{ !contains(fromJSON('["trusted-user"]'), github.event.issue.user.login) }}
-  run: exit 1
+- name: Invoke Jules
+  # Only runs if user is in the allowlist
+  if: ${{ contains(fromJSON('["trusted-user", "another-user"]'), github.event.issue.user.login) }}
+  uses: google-labs-code/jules-invoke@v1
+  with:
+    prompt: ...
 ```
 
 **Best practices:**
-- Never commit `JULES_API_KEY`—always use [GitHub actions secrets](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
-- Treat Jules like any team member: audit its work
+- Never commit `JULES_API_KEY`—always use [GitHub Actions secrets](https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/using-secrets-in-github-actions)
+- Treat Jules like any team member: review its PRs before merging
 
 ---
 
