@@ -7,6 +7,10 @@ on:
 jobs:
   fix-bug:
     # Only run when the 'bug' label is added
+    # Note you can also get Jules to trigger
+    # on repos by adding the 'jules' label,
+    # but this example lets you manage the prompt
+    # explicitly, add preamble, etc.
     if: github.event.label.name == 'bug'
     runs-on: ubuntu-latest
     permissions:
@@ -14,14 +18,9 @@ jobs:
       issues: read
     
     steps:
-      - name: Check if user is allowed
-        # SECURITY: Only allow trusted users to trigger Jules
-        if: ${{ !contains(fromJSON('["your-username", "trusted-collaborator"]'), github.event.issue.user.login) }}
-        run: |
-          echo "::error::User not authorized to trigger Jules"
-          exit 1
-      
       - name: Invoke Jules
+        # SECURITY: Only allow trusted users to trigger Jules
+        if: ${{ contains(fromJSON('["your-username", "trusted-collaborator"]'), github.event.issue.user.login) }}
         uses: google-labs-code/jules-invoke@v1
         with:
           prompt: |
